@@ -1,0 +1,15 @@
+/*.iml
+/build
+/documentation
+/.idea/*
+!/.idea/codeStyleSettings.xml
+!/.idea/inspectionProfiles
+/.idea/inspectionProfiles/*
+!/.idea/inspectionProfiles/consolehelloworld.xml
+!/.idea/inspectionProfiles/Project_Default.xml
+/.gradle
+/.sonar
+/env
+/main/*.iml
+/main/build
+/main/extras
