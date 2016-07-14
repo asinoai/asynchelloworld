@@ -13,6 +13,7 @@ public class Main {
         final Main main = new Main();
         main.simpleAsyncHello();
         main.betterAsyncHello();
+        main.oldWayAsyncHello();
 
         main.gracefullyShutdownPool();
     }
@@ -67,6 +68,17 @@ public class Main {
         });
 
         System.out.println("Hello from main thread!");
+    }
+
+    private void oldWayAsyncHello() {
+        final Thread thread = new Thread() {
+            @Override
+            public void run() {
+                System.out.println("Hello form non pool thread!");
+            }
+        };
+
+        thread.start();
     }
 
     public void gracefullyShutdownPool() {
