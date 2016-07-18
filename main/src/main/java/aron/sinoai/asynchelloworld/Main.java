@@ -1,6 +1,7 @@
 package aron.sinoai.asynchelloworld;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -14,6 +15,7 @@ public class Main {
         main.simpleAsyncHello();
         main.betterAsyncHello();
         main.oldWayAsyncHello();
+        main.oldWayQueuedAsyncHello();
 
         main.gracefullyShutdownPool();
     }
@@ -101,4 +103,55 @@ public class Main {
         }
     }
 
+    private void oldWayQueuedAsyncHello() throws InterruptedException {
+        final CustomThread thread = new CustomThread();
+
+        thread.start();
+
+        System.out.println("Numeric value from thread (before take): " +
+                thread.getNumericValue() + ", " +
+                thread.addAtomicNumericValue(5));
+
+        final String value = thread.getQueue().take();
+        System.out.println(value);
+
+        System.out.println("Numeric value from thread (after take): " +
+                thread.getNumericValue() + ", " +
+                thread.getAtomicNumericValue());
+    }
+
+    private static class CustomThread extends Thread {
+        private final BlockingDeque<String> queue = new LinkedBlockingDeque<>();
+        private final AtomicInteger atomicNumericValue = new AtomicInteger(0);
+        private volatile int numericValue = 0;
+
+        @Override
+        public void run() {
+            try {
+                numericValue = numericValue + 10;
+
+                atomicNumericValue.addAndGet(5);
+
+                queue.put("Hello form thread with blocking queue!");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public BlockingDeque<String> getQueue() {
+            return queue;
+        }
+
+        public int getNumericValue() {
+            return numericValue;
+        }
+
+        public int addAtomicNumericValue(final int value) {
+            return atomicNumericValue.addAndGet(value);
+        }
+
+        public int getAtomicNumericValue() {
+            return atomicNumericValue.get();
+        }
+    }
 }
